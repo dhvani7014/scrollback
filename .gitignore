@@ -1,0 +1,5 @@
+node_modules/
+.wrangler/
+capture-mac/scrollback
+.DS_Store
+__pycache__/
