@@ -1,0 +1,11 @@
+{
+  "name": "scrollback-relay",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node dev-server.mjs"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}
