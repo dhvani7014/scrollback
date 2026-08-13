@@ -10,3 +10,7 @@ A live, scrollable, selectable copy of a presenter's screen. Viewers open a link
 │ + Vision OCR     │             │ Object, 1/session │            │ image + text layer│
 └──────────────────┘             └───────────────────┘            └───────────────────┘
 ```
+
+## Relay Protocol
+- Role: presenter or viewer
+- Framing: JSON envelopes over WebSocket
