@@ -1,0 +1,16 @@
+name = "scrollback"
+main = "src/worker.js"
+compatibility_date = "2026-01-01"
+
+[assets]
+directory = "../viewer"
+binding = "ASSETS"
+run_worker_first = true
+
+[[durable_objects.bindings]]
+name = "SESSIONS"
+class_name = "SessionDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SessionDO"]
