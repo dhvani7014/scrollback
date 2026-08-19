@@ -78,6 +78,8 @@
   }
   #textLayer .ln::selection, #textLayer .ln *::selection { background: rgba(56,189,248,.45); color: transparent; }
   .dbg #textLayer .ln { outline: 1px solid var(--bc, #fc0); background: rgba(255,255,255,.05); }
+  .dbg #textLayer .ln.gutter { outline-style: dashed; }
+  #textLayer .ln.gutter { user-select: none; -webkit-user-select: none; pointer-events: none; }
   #textLayer .copyblk {
     position: absolute; pointer-events: auto; font-size: 12px; padding: 3px 10px; border-radius: 8px;
     background: rgba(17,24,39,.92); border: 1px solid #33466a; color: var(--text); opacity: .9; cursor: pointer;
@@ -131,7 +133,7 @@
   <span class="pill" id="connPill"><span class="dot"></span><span id="connText">Connecting…</span></span>
   <span class="pill" id="presPill" hidden><span class="dot"></span><span id="presText"></span></span>
   <div class="spacer"></div>
-  <span class="hint">Select text · click links · ← → to scrub</span>
+  <span class="hint">Select text · click links · ← → to scrub · d = debug</span>
   <button id="copyAll" title="Copy all text on this frame" disabled>Copy all text</button>
 </header>
 
