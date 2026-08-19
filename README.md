@@ -14,3 +14,8 @@ A live, scrollable, selectable copy of a presenter's screen. Viewers open a link
 ## Relay Protocol
 - Role: presenter or viewer
 - Framing: JSON envelopes over WebSocket
+
+## Run it (on your Mac)
+```bash
+cd relay && npm install && npm run dev
+```
