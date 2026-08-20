@@ -536,3 +536,5 @@ function setPresence(online) {
 }
 
 connect();
+
+// Canvas resize handler
