@@ -19,3 +19,8 @@ A live, scrollable, selectable copy of a presenter's screen. Viewers open a link
 ```bash
 cd relay && npm install && npm run dev
 ```
+
+```bash
+cd capture-mac && ./build.sh
+./scrollback --relay http://localhost:8787
+```
