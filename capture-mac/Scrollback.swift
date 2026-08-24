@@ -63,7 +63,7 @@ func parseArgs() -> Options {
     while let a = it.next() {
         switch a {
         case "--relay": if let v = it.next() { o.relay = v.hasSuffix("/") ? String(v.dropLast()) : v }
-        case "--fps": if let v = it.next(), let d = Double(v) { o.fps = d }
+        case "--fps": if let v = it.next(), let d = Double(v) { o.fps = min(5, max(0.5, d)) }
         case "--session": o.session = it.next()
         case "--window": o.windowQuery = it.next()
         case "--display": if let v = it.next(), let i = Int(v) { o.displayIndex = max(0, i) }
