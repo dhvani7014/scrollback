@@ -24,3 +24,4 @@ cd relay && npm install && npm run dev
 cd capture-mac && ./build.sh
 ./scrollback --relay http://localhost:8787
 ```
+- Playwright E2E browser tests passing for code editor fixtures.
