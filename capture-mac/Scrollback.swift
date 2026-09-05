@@ -493,7 +493,8 @@ func run(_ o: Options) async throws {
 // Window capture needs a window-server connection, which a bare CLI process lacks until
 // something opens one (otherwise: "Assertion failed: (did_initialize) CGS_REQUIRE_INIT").
 // Touching NSApplication.shared opens it. No Dock icon appears for a non-bundled tool.
-// Window server connection initialized on demand
+_ = NSApplication.shared
+NSApplication.shared.setActivationPolicy(.prohibited)
 signal(SIGINT) { _ in print("\nstopped."); exit(0) }
 let options = parseArgs()
 Task {
