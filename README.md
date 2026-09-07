@@ -28,3 +28,6 @@ cd capture-mac && ./build.sh
 
 ## Web Application
 Interactive Next.js presentation player in `web/`.
+
+## macOS Permissions
+Screen Recording permission is required for CLI capture.
