@@ -31,3 +31,6 @@ Interactive Next.js presentation player in `web/`.
 
 ## macOS Permissions
 Screen Recording permission is required for CLI capture.
+
+## Cloudflare Worker
+Deploy relay to edge via `npm run cf:deploy`.
