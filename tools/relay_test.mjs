@@ -6,7 +6,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../relay/package.json"));
 const WebSocket = require("ws");
-const base = (process.argv[2] || "http://localhost:8787").replace(/^http/, "ws");
+const base = (process.argv[2] || "http://127.0.0.1:8787").replace(/^http/, "ws");
 const id = "test" + Math.random().toString(36).slice(2, 10);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
