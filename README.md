@@ -34,3 +34,4 @@ Screen Recording permission is required for CLI capture.
 
 ## Cloudflare Worker
 Deploy relay to edge via `npm run cf:deploy`.
+- Noisy editor fixture tests passing.
