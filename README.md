@@ -37,3 +37,4 @@ Deploy relay to edge via `npm run cf:deploy`.
 - Noisy editor fixture tests passing.
 
 - ScreenCaptureKit stream configuration verified on macOS Sonoma.
+- High-performance swiftc binary build configuration.
