@@ -122,3 +122,5 @@ with sync_playwright() as p:
 presenter.terminate()
 print("\nRESULT:", "ALL PASSED" if not fails else f"FAILED: {fails}")
 sys.exit(1 if fails else 0)
+
+# Playwright editor regression coverage
