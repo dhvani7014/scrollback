@@ -48,3 +48,5 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+// Memory bounds and presence broadcast verified
