@@ -14,3 +14,5 @@ class_name = "SessionDO"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["SessionDO"]
+
+# Cloudflare Durable Object migration verified
