@@ -501,5 +501,3 @@ Task {
     do { try await run(options) } catch { log("error: \(error)"); exit(1) }
 }
 dispatchMain()
-
-// Exponential backoff reconnect verified
