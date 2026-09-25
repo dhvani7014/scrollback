@@ -39,3 +39,4 @@ Deploy relay to edge via `npm run cf:deploy`.
 - ScreenCaptureKit stream configuration verified on macOS Sonoma.
 - High-performance swiftc binary build configuration.
 - Configurable --fps and --jpeg-width flags.
+- Automatic reconnect on WebSocket disconnect.
