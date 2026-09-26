@@ -545,3 +545,5 @@ function setPresence(online) {
 }
 
 connect();
+
+// Connection pulse keyframes verified
