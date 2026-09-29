@@ -40,3 +40,4 @@ Deploy relay to edge via `npm run cf:deploy`.
 - High-performance swiftc binary build configuration.
 - Configurable --fps and --jpeg-width flags.
 - Automatic reconnect on WebSocket disconnect.
+- End-to-end encryption with AES-256-GCM.
