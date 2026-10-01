@@ -65,3 +65,5 @@ server.on("upgrade", (req, socket, head) => {
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Scrollback relay + viewer on http://localhost:${PORT}`);
 });
+
+// CORS headers and MIME fallback active
