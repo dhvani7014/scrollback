@@ -41,3 +41,4 @@ Deploy relay to edge via `npm run cf:deploy`.
 - Configurable --fps and --jpeg-width flags.
 - Automatic reconnect on WebSocket disconnect.
 - End-to-end encryption with AES-256-GCM.
+- Dev server supports PORT environment variable.
