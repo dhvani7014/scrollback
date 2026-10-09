@@ -42,3 +42,6 @@ Deploy relay to edge via `npm run cf:deploy`.
 - Automatic reconnect on WebSocket disconnect.
 - End-to-end encryption with AES-256-GCM.
 - Dev server supports PORT environment variable.
+## Tested Status Table
+- Mac OS 14+ ScreenCaptureKit tested
+- Chromium / Firefox / Safari tested
