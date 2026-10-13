@@ -153,8 +153,8 @@ function median(a) {
 // column's box count too.
 function findGutterLines(L) {
   const gutter = new Set();
-  const isNum = (t) => /^\d{1,4}[.:|]?$/.test(t.trim());
-  const looksNum = (t) => /^[0-9IlOo|SsBb]{1,4}[.:|]?$/.test(t.trim());
+  const isNum = (t) => /^\d{1,4}$/.test(t);
+  const looksNum = (t) => /^[0-9IlOo|SsBb]{1,4}$/.test(t);
   const anchors = L.filter((l) => isNum(l.t));
   if (anchors.length < 2) return gutter;
   const lh = (l) => l.y1 - l.y0;
@@ -225,7 +225,7 @@ function buildBlocks(f) {
       x1: Math.max(...lines.map((l) => l.x1)), y1: Math.max(...lines.map((l) => l.y1)),
     };
     // a column of bare line numbers (editor gutter): never selectable, never copied
-    b.gutter = lines.every((l) => /^\d{1,4}[.:|]?$/.test(l.t.trim()));
+    b.gutter = lines.length >= 3 && lines.every((l) => /^\d{1,4}$/.test(l.t));
     // code-like: monospace-consistent glyph width and lots of code punctuation
     const per = lines.filter((l) => l.t.length >= 6).map((l) => (l.x1 - l.x0) / l.t.length);
     if (!b.gutter && per.length >= 3) {
@@ -274,11 +274,7 @@ function blockText(b) {
       const blanks = Math.round((centers[i] - centers[i - 1]) / pitch) - 1;
       for (let k = 0; k < Math.min(blanks, 3); k++) out.push("");
     }
-    let text = l.t;
-    if (b.code && /^\s*\d{1,4}(?:[:|.]|\s{2,})/.test(text)) {
-      text = text.replace(/^\s*\d{1,4}(?:[:|.]|\s{2,})\s*/, "");
-    }
-    out.push(" ".repeat(l.ind) + text);
+    out.push(" ".repeat(l.ind) + l.t);
   });
   return out.join("\n");
 }
@@ -385,12 +381,7 @@ document.addEventListener("copy", (e) => {
         for (let k = 0; k < Math.min(blanks, 3); k++) out.push("");
       }
     }
-    let lineText = selectedSliceOf(s, range);
-    // Strip leading line numbers if merged into code line (e.g. "1  x = 10" or "1: x = 10")
-    if (s._block && (s._block.code || /^\s*\d{1,4}(?:[:|.]|\s{2,})/.test(lineText))) {
-      lineText = lineText.replace(/^\s*\d{1,4}(?:[:|.]|\s{2,})\s*/, "");
-    }
-    out.push(lineText);
+    out.push(selectedSliceOf(s, range));
   });
   e.clipboardData.setData("text/plain", out.join("\n"));
   e.preventDefault();
