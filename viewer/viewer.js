@@ -274,7 +274,11 @@ function blockText(b) {
       const blanks = Math.round((centers[i] - centers[i - 1]) / pitch) - 1;
       for (let k = 0; k < Math.min(blanks, 3); k++) out.push("");
     }
-    out.push(" ".repeat(l.ind) + l.t);
+    let text = l.t;
+    if (b.code && /^\s*\d{1,4}(?:[:|.]|\s{2,})/.test(text)) {
+      text = text.replace(/^\s*\d{1,4}(?:[:|.]|\s{2,})\s*/, "");
+    }
+    out.push(" ".repeat(l.ind) + text);
   });
   return out.join("\n");
 }
@@ -381,7 +385,12 @@ document.addEventListener("copy", (e) => {
         for (let k = 0; k < Math.min(blanks, 3); k++) out.push("");
       }
     }
-    out.push(selectedSliceOf(s, range));
+    let lineText = selectedSliceOf(s, range);
+    // Strip leading line numbers if merged into code line (e.g. "1  x = 10" or "1: x = 10")
+    if (s._block && (s._block.code || /^\s*\d{1,4}(?:[:|.]|\s{2,})/.test(lineText))) {
+      lineText = lineText.replace(/^\s*\d{1,4}(?:[:|.]|\s{2,})\s*/, "");
+    }
+    out.push(lineText);
   });
   e.clipboardData.setData("text/plain", out.join("\n"));
   e.preventDefault();
