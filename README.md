@@ -45,3 +45,4 @@ Deploy relay to edge via `npm run cf:deploy`.
 ## Tested Status Table
 - Mac OS 14+ ScreenCaptureKit tested
 - Chromium / Firefox / Safari tested
+- Auto-strip leading line numbers merged by OCR into code lines.
