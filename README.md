@@ -14,7 +14,7 @@ keeps going — then tap **Jump to live**.
         key lives only in the viewer link's #fragment — the relay never sees it
 ```
 
-## Architecture & Verified Systems
+## Tested Status Matrix
 
 | Piece | Status |
 |---|---|
