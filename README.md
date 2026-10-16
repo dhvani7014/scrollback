@@ -14,7 +14,7 @@ keeps going — then tap **Jump to live**.
         key lives only in the viewer link's #fragment — the relay never sees it
 ```
 
-## Tested Status Matrix
+## Status — what's actually been tested
 
 | Piece | Status |
 |---|---|
