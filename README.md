@@ -10,7 +10,7 @@
 
 🌐 **Live Demo:** [https://scrollback1.vercel.app/](https://scrollback1.vercel.app/)
 
-![Scrollback Developer Workbench](docs/screenshots/workbench.png)
+![Scrollback Developer Workbench](docs/screenshots/workbench-preview.png)
 
 Viewers open a link in their browser and can highlight, copy code blocks with preserved indentation, click links, and scrub backwards through video history while the presentation continues — then jump back to live.
 
