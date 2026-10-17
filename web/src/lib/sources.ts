@@ -81,8 +81,13 @@ export async function shareTab(reader: Reader, opts: TabOptions = {}) {
 
   const tick = () => {
     if (stopped || !video.videoWidth) return;
-    const crop = opts.crop?.(video.videoWidth, video.videoHeight) ?? undefined;
-    const c = snapshot(video, video.videoWidth, video.videoHeight, crop ?? undefined);
+    let crop: { x: number; y: number; w: number; h: number } | undefined = undefined;
+    if (opts.crop) {
+      const cr = opts.crop(video.videoWidth, video.videoHeight);
+      if (!cr) return; // Crop target is currently hidden or out of view; do NOT capture entire tab
+      crop = cr;
+    }
+    const c = snapshot(video, video.videoWidth, video.videoHeight, crop);
     const grey = det.grey(c);
     const moving = lastSample ? det.diff(lastSample, grey) >= 2 : true;
     lastSample = grey;

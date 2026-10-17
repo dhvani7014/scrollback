@@ -60,9 +60,25 @@ export function buildBlocks(f: Frame): Block[] {
   for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
     const a = R[i], b = R[j];
     const lh = Math.min(a.y1 - a.y0, b.y1 - b.y0) || 1;
-    const overlapX = a.x0 < b.x1 + lh * 0.3 && b.x0 < a.x1 + lh * 0.3;
+    const xOverlap = Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0);
+    const minW = Math.min(a.x1 - a.x0, b.x1 - b.x0);
+    const maxW = Math.max(a.x1 - a.x0, b.x1 - b.x0);
+
+    // Two lines in the same block/column must have genuine horizontal overlap
+    if (xOverlap <= 0 || (minW > 0 && xOverlap / minW < 0.15)) continue;
+
+    // Disproportionate width: a wide line spanning across columns (e.g. title bar, breadcrumb)
+    // must NOT merge with a narrow column line
+    if (minW > 70 && maxW / minW > 3.2) continue;
+
+    // Must be vertically sequential without excessive vertical overlap (no side-by-side)
+    const yOverlap = Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0);
+    if (yOverlap > lh * 0.4) continue;
+
     const gapY = Math.max(b.y0 - a.y1, a.y0 - b.y1);
-    if (overlapX && gapY <= lh * 3.2) parent[find(i)] = find(j);
+    if (gapY > lh * 4.0) continue;
+
+    parent[find(i)] = find(j);
   }
   const groups = new Map<number, PxLine[]>();
   R.forEach((l, i) => { const r = find(i); if (!groups.has(r)) groups.set(r, []); groups.get(r)!.push(l); });
@@ -107,8 +123,34 @@ export function buildBlocks(f: Frame): Block[] {
     });
   }
   blocks.sort((a, b) => a.x0 - b.x0 || a.y0 - b.y0);
-  f.blocks = blocks;
-  return blocks;
+
+  // Consolidate adjacent code blocks that belong to the same editor column
+  const consolidated: Block[] = [];
+  for (const b of blocks) {
+    const last = consolidated[consolidated.length - 1];
+    if (
+      last &&
+      last.code &&
+      b.code &&
+      !last.gutter &&
+      !b.gutter &&
+      Math.abs(b.x0 - last.x0) < 120 &&
+      b.y0 - last.y1 < 250
+    ) {
+      last.lines.push(...b.lines);
+      last.x0 = Math.min(last.x0, b.x0);
+      last.y0 = Math.min(last.y0, b.y0);
+      last.x1 = Math.max(last.x1, b.x1);
+      last.y1 = Math.max(last.y1, b.y1);
+      if (!last.charW && b.charW) last.charW = b.charW;
+      last.pitch = Math.min(last.pitch, b.pitch);
+    } else {
+      consolidated.push(b);
+    }
+  }
+
+  f.blocks = consolidated;
+  return consolidated;
 }
 
 export function blockText(b: Block): string {
