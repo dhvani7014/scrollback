@@ -24,7 +24,17 @@ function fillContent(node: HTMLElement, text: string) {
   if (last < text.length) node.append(document.createTextNode(text.slice(last)));
 }
 
-export default function FrameView({ frame, onToast, children }: { frame: Frame; onToast: (m: string) => void; children?: React.ReactNode }) {
+export default function FrameView({
+  frame,
+  onToast,
+  searchQuery = "",
+  children,
+}: {
+  frame: Frame;
+  onToast: (m: string) => void;
+  searchQuery?: string;
+  children?: React.ReactNode;
+}) {
   const wrap = useRef<HTMLDivElement>(null);
   const layer = useRef<HTMLDivElement>(null);
   const toastRef = useRef(onToast);
@@ -42,40 +52,62 @@ export default function FrameView({ frame, onToast, children }: { frame: Frame; 
     const frag = document.createDocumentFragment();
     const spans: [HTMLElement, number][] = [];
     const blocks = buildBlocks(frame);
-    for (const b of blocks) for (const l of b.lines) {
-      const s = document.createElement("span") as HTMLElement & { _line?: PxLine; _block?: typeof b };
-      s.className = "ln" + (b.gutter ? " gutter" : "");
-      fillContent(s, " ".repeat(l.ind) + l.t);
-      const indPx = l.ind * b.charW, hgt = (l.y1 - l.y0) * sy;
-      s.style.left = (l.x0 - indPx) * sx + "px";
-      s.style.top = l.y0 * sy + "px";
-      s.style.fontSize = Math.max(6, hgt * 0.82) + "px";
-      s.style.height = hgt + "px";
-      s._line = l; s._block = b;
-      frag.append(s);
-      spans.push([s, (l.x1 - l.x0 + indPx) * sx]);
+    const query = searchQuery.trim().toLowerCase();
+
+    for (const b of blocks) {
+      const blockEl = document.createElement("div");
+      blockEl.className = "blk" + (b.code ? " blk-code" : "") + (b.gutter ? " blk-gutter" : "");
+      for (const l of b.lines) {
+        const s = document.createElement("span") as HTMLElement & { _line?: PxLine; _block?: typeof b };
+        const isMatch = query.length > 0 && l.t.toLowerCase().includes(query);
+        s.className = "ln" + (b.gutter ? " gutter" : "") + (isMatch ? " ln-match" : "");
+        fillContent(s, " ".repeat(l.ind) + l.t);
+        const indPx = l.ind * b.charW, hgt = (l.y1 - l.y0) * sy;
+        s.style.left = (l.x0 - indPx) * sx + "px";
+        s.style.top = l.y0 * sy + "px";
+        s.style.fontSize = Math.max(6, hgt * 0.82) + "px";
+        s.style.height = hgt + "px";
+        s._line = l; s._block = b;
+        blockEl.append(s);
+        spans.push([s, (l.x1 - l.x0 + indPx) * sx]);
+      }
+      frag.append(blockEl);
+    }
+
+    // Exactly 1 unified "Copy code" button for the complete code on screen
+    const codeBlocks = blocks.filter((b) => b.code && !b.gutter);
+    if (codeBlocks.length > 0) {
+      const allLines = codeBlocks.flatMap((b) => b.lines);
+      const minX0 = Math.min(...codeBlocks.map((b) => b.x0));
+      const minY0 = Math.min(...codeBlocks.map((b) => b.y0));
+
+      const btn = document.createElement("button");
+      btn.className = "copyblk";
+      btn.type = "button";
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:-1px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><span>Copy code</span>`;
+      btn.title = `Copy complete code (${allLines.length} lines, indented)`;
+      btn.style.top = Math.max(6, minY0 * sy - 34) + "px";
+      btn.style.left = Math.max(6, minX0 * sx) + "px";
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        try {
+          const completeText = codeBlocks.map((b) => blockText(b)).join("\n\n");
+          await navigator.clipboard.writeText(completeText);
+          toastRef.current(`Copied complete code (${allLines.length} lines)`);
+        } catch {
+          toastRef.current("Clipboard blocked — select the text instead");
+        }
+      });
+      frag.append(btn);
     }
     el.append(frag);
     for (const [s, target] of spans) {
       const natural = s.scrollWidth || s.getBoundingClientRect().width;
       if (natural > 0 && target > 0) s.style.transform = `scaleX(${(target / natural).toFixed(4)})`;
     }
-    for (const b of blocks) if (b.code) {
-      const btn = document.createElement("button");
-      btn.className = "copyblk"; btn.type = "button"; btn.textContent = "Copy code";
-      btn.title = `Copy these ${b.lines.length} lines, with indentation`;
-      btn.style.top = Math.max(2, b.y0 * sy - 30) + "px";
-      btn.style.left = Math.max(2, b.x0 * sx) + "px";
-      btn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        try { await navigator.clipboard.writeText(blockText(b)); toastRef.current(`Copied ${b.lines.length} lines`); }
-        catch { toastRef.current("Clipboard blocked — select the text instead"); }
-      });
-      el.append(btn);
-    }
   };
 
-  useLayoutEffect(() => { layout(); }, [frame]); // eslint-disable-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => { layout(); }, [frame, searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const ro = new ResizeObserver(() => layout());
     if (wrap.current) ro.observe(wrap.current);
