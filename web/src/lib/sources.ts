@@ -67,9 +67,9 @@ export async function shareTab(reader: Reader, opts: TabOptions = {}) {
   const md = navigator.mediaDevices as MediaDevices & { getDisplayMedia(c?: unknown): Promise<MediaStream> };
   if (!md?.getDisplayMedia) throw new Error("This browser can't share a tab. Use Chrome or Edge on a computer.");
   const stream = await md.getDisplayMedia({
-    video: { frameRate: 6 }, audio: false,
+    video: { frameRate: 6, displaySurface: "browser" }, audio: false,
     preferCurrentTab: !!opts.preferCurrentTab, selfBrowserSurface: opts.preferCurrentTab ? "include" : "exclude",
-    surfaceSwitching: "include", monitorTypeSurfaces: "include",
+    surfaceSwitching: "include", monitorTypeSurfaces: opts.preferCurrentTab ? "include" : "exclude",
   });
   const video = document.createElement("video");
   video.muted = true; video.playsInline = true; video.srcObject = stream;

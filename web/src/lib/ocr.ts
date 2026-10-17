@@ -3,7 +3,7 @@
 import type { OcrEngine, OcrLine } from "./types";
 import { buildBlocks } from "./textlayer";
 
-const TARGET_W = 2560;
+const TARGET_W = 1600;
 type Tune = { w?: number; gain?: number; blur?: number; psm?: string };
 const tune = (): Tune => (typeof window !== "undefined" && (window as unknown as { __tune?: Tune }).__tune) || {};
 

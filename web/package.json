@@ -2,6 +2,7 @@
   "name": "scrollback-web",
   "private": true,
   "version": "0.1.0",
+  "type": "module",
   "scripts": {
     "postinstall": "node scripts/copy-tesseract-assets.mjs",
     "dev": "next dev",
