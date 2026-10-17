@@ -3,3 +3,5 @@ node_modules/
 capture-mac/scrollback
 .DS_Store
 __pycache__/
+.next/
+web/AGENTS.md
