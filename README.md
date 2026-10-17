@@ -2,6 +2,13 @@
 
 > **Turn any screen video, live stream, or presentation into clean, selectable, searchable code.**
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-scrollback1.vercel.app-14b8a6?style=for-the-badge&logo=vercel)](https://scrollback1.vercel.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+🌐 **Live Demo:** [https://scrollback1.vercel.app/](https://scrollback1.vercel.app/)
+
+![Scrollback Developer Workbench](docs/screenshots/workbench.png)
+
 Viewers open a link in their browser and can highlight, copy code blocks with preserved indentation, click links, and scrub backwards through video history while the presentation continues — then jump back to live.
 
 ---
@@ -14,14 +21,20 @@ When watching technical video tutorials, live coding streams, or remote presenta
 - Search for specific variables, functions, or error messages across past video frames.
 
 **Scrollback solves this directly in your browser:**
-1. **Interactive Text Layer**: OCR transcribes screen frames in real time and aligns transparent text spans over pixels. Drag to highlight or click "Copy code".
+1. **Interactive Text Layer & Clean Code View**: OCR transcribes screen frames in real time with pixel-aligned text. Toggle between visual video overlays and a distraction-free dark code editor view with 1-click `Copy code`.
 2. **Timeline & Historical Search (`⌘F`)**: Scrub through previous screens and search keywords across all captured frames.
 3. **Multi-Source Capture**:
    - **Chrome Tab / Window**: Capture any browser tab or local app with change detection.
-   - **YouTube Video**: Stream tutorials with synchronized code extraction.
+   - **YouTube Video**: Stream tutorials with synchronized code extraction and playback speed controls. *(🚧 In progress: YouTube Playlist button for multi-video series).*
    - **Video Files**: Drag-and-drop `.mp4` or `.webm` recordings for fast offline scanning.
    - **Mac CLI (`capture-mac`)**: Native ScreenCaptureKit streaming with Apple Vision OCR and end-to-end AES-256-GCM encryption.
 4. **100% Private & Client-Side**: Browser OCR runs locally via Tesseract.js (WASM). No screen recordings or OCR text ever leave your computer.
+
+| 📺 Side-by-Side YouTube Reader | 📝 Clean Code View (1-Click Copy) |
+| :---: | :---: |
+| ![YouTube Video & Code Reader](docs/screenshots/youtube-reader.png) | ![Clean Code Text View](docs/screenshots/code-view.png) |
+
+> 🚧 **Work in Progress:** We are currently working on a dedicated **YouTube Playlist** button and batch extraction engine to automatically scan, organize, and export code chapters across full multi-video tutorial series.
 
 ---
 
