@@ -76,10 +76,11 @@ export default function FrameView({
 
     // Exactly 1 unified "Copy code" button for the complete code on screen
     const codeBlocks = blocks.filter((b) => b.code && !b.gutter);
-    if (codeBlocks.length > 0) {
-      const allLines = codeBlocks.flatMap((b) => b.lines);
-      const minX0 = Math.min(...codeBlocks.map((b) => b.x0));
-      const minY0 = Math.min(...codeBlocks.map((b) => b.y0));
+    const targetBlocks = codeBlocks.length > 0 ? codeBlocks : blocks.filter((b) => !b.gutter);
+    if (targetBlocks.length > 0) {
+      const allLines = targetBlocks.flatMap((b) => b.lines);
+      const minX0 = Math.min(...targetBlocks.map((b) => b.x0));
+      const minY0 = Math.min(...targetBlocks.map((b) => b.y0));
 
       const btn = document.createElement("button");
       btn.className = "copyblk";
@@ -91,7 +92,7 @@ export default function FrameView({
       btn.addEventListener("click", async (e) => {
         e.stopPropagation();
         try {
-          const completeText = codeBlocks.map((b) => blockText(b)).join("\n\n");
+          const completeText = targetBlocks.map((b) => blockText(b)).join("\n\n");
           await navigator.clipboard.writeText(completeText);
           toastRef.current(`Copied complete code (${allLines.length} lines)`);
         } catch {

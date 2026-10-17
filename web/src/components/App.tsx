@@ -5,7 +5,7 @@ import demo from "@/lib/demo-lines.json";
 import { TesseractEngine } from "@/lib/ocr";
 import { Reader } from "@/lib/pipeline";
 import { readRecording, shareTab, type Progress } from "@/lib/sources";
-import { frameText } from "@/lib/textlayer";
+import { frameText, buildBlocks, blockText } from "@/lib/textlayer";
 import type { Frame } from "@/lib/types";
 import { parseYouTube, type YouTubeRef } from "@/lib/youtube";
 import GettingStarted from "./GettingStarted";
@@ -682,16 +682,30 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
     }
   };
 
-  const [layoutMode, setLayoutMode] = useState<"single" | "split">("single");
+  const [layoutMode, setLayoutMode] = useState<"single" | "split">("split");
+  const [viewMode, setViewMode] = useState<"overlay" | "code">("overlay");
 
   const status = reader.error ? reader.error
     : session.kind === "recording" ? (session.done ? "Finished" : `Reading ${session.progress?.done ?? 0}/${session.progress?.total ?? "…"}`)
       : sharing ? (reader.inFlight ? "Reading…" : "Watching") : "Stopped";
 
-  const copyAll = async () => {
-    if (!frame) return;
-    try { await navigator.clipboard.writeText(frameText(frame)); toast("Copied all text on this screen"); }
-    catch { toast("Clipboard blocked — select the text instead"); }
+  const cleanCodeText = useMemo(() => {
+    if (!frame) return "";
+    const blocks = buildBlocks(frame);
+    const codeBlocks = blocks.filter((b) => b.code && !b.gutter);
+    const targetBlocks = codeBlocks.length > 0 ? codeBlocks : blocks.filter((b) => !b.gutter);
+    return targetBlocks.map(blockText).join("\n\n");
+  }, [frame]);
+
+  const copyCode = async () => {
+    const textToCopy = cleanCodeText || (frame ? frameText(frame) : "");
+    if (!textToCopy) return;
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      toast("Copied code to clipboard");
+    } catch {
+      toast("Clipboard blocked — select the text instead");
+    }
   };
 
   return (
@@ -755,12 +769,14 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
                 <button className="btn ghost" onClick={() => ytCmd("playVideo")} title="Play video">▶ Play</button>
               </>
             )}
-            <button className="btn ghost" onClick={() => setLayoutMode(layoutMode === "single" ? "split" : "single")}>
-              {layoutMode === "single" ? "◫ Side-by-side" : "⬇ Stacked View"}
+            <button className="btn ghost" onClick={() => setLayoutMode(layoutMode === "split" ? "single" : "split")} title="Toggle Side-by-side or Stacked view">
+              {layoutMode === "split" ? "⬇ Stacked View" : "◫ Side-by-side"}
             </button>
           </>
         )}
-        <button className="btn ghost" onClick={copyAll} disabled={!frame} id="copyAll">Copy all text</button>
+        <button className="btn hi" onClick={copyCode} disabled={!frame} id="copyCode">
+          📋 Copy Code
+        </button>
         <button className="btn ghost" onClick={onLeave} id="leave">{sharing || session.kind === "recording" ? "Stop and close" : "Close"}</button>
       </div>
 
@@ -768,8 +784,10 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
         {yt && (
           <div className="yt-pane">
             <div className="pane-header">
-              <span className="pane-tag">📺 1. Original Video Player</span>
-              <span className="pane-hint">Play or pause your tutorial here</span>
+              <div className="pane-header-left">
+                <span className="pane-tag">📺 1. Original Video Player</span>
+                <span className="pane-hint">Play or pause your tutorial here</span>
+              </div>
             </div>
             <div className="yt">
               <iframe
@@ -788,15 +806,50 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
         )}
 
         <div className="stage">
-          {yt && (
-            <div className="pane-header">
-              <span className="pane-tag">⚡ 2. Extracted Code Reader</span>
-              <span className="pane-hint">Click &quot;Copy code&quot; or drag to select</span>
+          <div className="pane-header">
+            <div className="pane-header-left">
+              <span className="pane-tag">⚡ {yt ? "2. Extracted Code Reader" : "Code Reader"}</span>
+              <span className="pane-hint">Click &quot;Copy code&quot; or select text</span>
             </div>
-          )}
-          {frame
-            ? <FrameView frame={frame} searchQuery={searchQuery} onToast={toast} />
-            : (
+            {frame && (
+              <div className="view-mode-toggle">
+                <button
+                  type="button"
+                  className={`btn-mode ${viewMode === "overlay" ? "active" : ""}`}
+                  onClick={() => setViewMode("overlay")}
+                  title="Visual text spans overlaid directly on the video frame"
+                >
+                  🖼️ Visual Overlay
+                </button>
+                <button
+                  type="button"
+                  className={`btn-mode ${viewMode === "code" ? "active" : ""}`}
+                  onClick={() => setViewMode("code")}
+                  title="Clean text inside a dark syntax editor box for easy selection & copying"
+                >
+                  📝 Clean Code View
+                </button>
+              </div>
+            )}
+          </div>
+
+          {frame ? (
+            viewMode === "code" ? (
+              <div className="clean-code-pane">
+                <div className="clean-code-header">
+                  <span className="clean-code-title">Editor Text View · {clock(frame.ts)}</span>
+                  <button type="button" className="btn hi btn-sm" onClick={copyCode}>
+                    📋 Copy Code
+                  </button>
+                </div>
+                <pre className="clean-code-content">
+                  <code>{cleanCodeText || "No text detected on this frame."}</code>
+                </pre>
+              </div>
+            ) : (
+              <FrameView frame={frame} searchQuery={searchQuery} onToast={toast} />
+            )
+          ) : (
               <div className="screen empty">
                 {!sharing && yt ? (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
