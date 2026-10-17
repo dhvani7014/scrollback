@@ -5,20 +5,54 @@
 // A "conn" is any object with { send(string), close(code, reason) }.
 
 export class Session {
-  constructor({ maxBytes = 40 * 1024 * 1024, maxFrames = 600 } = {}) {
+  constructor({ maxBytes = 40 * 1024 * 1024, maxFrames = 600, idleTimeoutMs = 10 * 60 * 1000 } = {}) {
     this.maxBytes = maxBytes;
     this.maxFrames = maxFrames;
+    this.idleTimeoutMs = idleTimeoutMs;
     this.frames = []; // { seq, ts, blob }
     this.bytes = 0;
     this.seq = 0;
     this.viewers = new Set();
     this.presenter = null;
     this.token = null; // set by the first presenter, required afterwards
+    this.onIdle = null;
+    this._idleTimer = null;
+    this._checkIdle();
+  }
+
+  _checkIdle() {
+    if (!this.presenter && this.viewers.size === 0) {
+      if (!this._idleTimer) {
+        this._idleTimer = setTimeout(() => {
+          if (!this.presenter && this.viewers.size === 0) {
+            this.destroy();
+          }
+        }, this.idleTimeoutMs);
+      }
+    } else {
+      if (this._idleTimer) {
+        clearTimeout(this._idleTimer);
+        this._idleTimer = null;
+      }
+    }
+  }
+
+  destroy() {
+    if (this._idleTimer) {
+      clearTimeout(this._idleTimer);
+      this._idleTimer = null;
+    }
+    this.frames = [];
+    this.bytes = 0;
+    this.viewers.clear();
+    this.presenter = null;
+    if (this.onIdle) this.onIdle();
   }
 
   // ---- viewers -------------------------------------------------------------
   connectViewer(conn) {
     this.viewers.add(conn);
+    this._checkIdle();
     conn.send(
       JSON.stringify({
         type: "hello",
@@ -37,12 +71,13 @@ export class Session {
   disconnectViewer(conn) {
     this.viewers.delete(conn);
     this._broadcastViewerCount();
+    this._checkIdle();
   }
 
   // ---- presenter -----------------------------------------------------------
   // Returns true if accepted. The first presenter claims the session token.
   connectPresenter(conn, token) {
-    if (!token || token.length < 16) {
+    if (!token || typeof token !== "string" || token.length < 16) {
       conn.close(4400, "presenter token required (min 16 chars)");
       return false;
     }
@@ -58,6 +93,7 @@ export class Session {
     }
     this.presenter = conn;
     this._broadcast({ type: "presence", presenter: true });
+    this._checkIdle();
     return true;
   }
 
@@ -65,6 +101,7 @@ export class Session {
     if (this.presenter === conn) {
       this.presenter = null;
       this._broadcast({ type: "presence", presenter: false });
+      this._checkIdle();
     }
   }
 

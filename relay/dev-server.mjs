@@ -36,7 +36,13 @@ const server = http.createServer((req, res) => {
 
 const sessions = new Map();
 const getSession = (id) => {
-  if (!sessions.has(id)) sessions.set(id, new Session());
+  if (!sessions.has(id)) {
+    const s = new Session();
+    s.onIdle = () => {
+      sessions.delete(id);
+    };
+    sessions.set(id, s);
+  }
   return sessions.get(id);
 };
 
