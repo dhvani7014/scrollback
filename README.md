@@ -3,6 +3,9 @@
 > **Turn any screen video, live stream, or presentation into clean, selectable, searchable code.**
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-scrollback1.vercel.app-14b8a6?style=for-the-badge&logo=vercel)](https://scrollback1.vercel.app/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.1.1-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19-61dafb?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 🌐 **Live Demo:** [https://scrollback1.vercel.app/](https://scrollback1.vercel.app/)
@@ -13,28 +16,32 @@ Viewers open a link in their browser and can highlight, copy code blocks with pr
 
 ---
 
-## ⚡ What is Scrollback?
+## ⚡ Key Highlights
 
-When watching technical video tutorials, live coding streams, or remote presentations, viewers often struggle to:
-- Copy terminal commands or code snippets without typing them out manually.
-- Pause and review earlier lines of code without interrupting the presenter or video playback.
-- Search for specific variables, functions, or error messages across past video frames.
-
-**Scrollback solves this directly in your browser:**
-1. **Interactive Text Layer & Clean Code View**: OCR transcribes screen frames in real time with pixel-aligned text. Toggle between visual video overlays and a distraction-free dark code editor view with 1-click `Copy code`.
-2. **Timeline & Historical Search (`⌘F`)**: Scrub through previous screens and search keywords across all captured frames.
-3. **Multi-Source Capture**:
-   - **Chrome Tab / Window**: Capture any browser tab or local app with change detection.
-   - **YouTube Video**: Stream tutorials with synchronized code extraction and playback speed controls. *(🚧 In progress: YouTube Playlist button for multi-video series).*
-   - **Video Files**: Drag-and-drop `.mp4` or `.webm` recordings for fast offline scanning.
-   - **Mac CLI (`capture-mac`)**: Native ScreenCaptureKit streaming with Apple Vision OCR and end-to-end AES-256-GCM encryption.
-4. **100% Private & Client-Side**: Browser OCR runs locally via Tesseract.js (WASM). No screen recordings or OCR text ever leave your computer.
+- **📝 Clean Code View**: Toggle between the visual video canvas and a distraction-free dark code editor view with standard text selection and unified **1-Click `Copy code`**.
+- **▥ Dual Viewport Layouts**: Switch instantly between **Side-by-Side View** (50/50 parallel video & code) and **Stacked View** (full-width stacked reader) depending on your screen size.
+- **🔍 Timeline Scrubbing & ⌘F Search**: Scrub backward through past video history without interrupting playback, or press `⌘F` to search keywords, function names, and syntax across all frames.
+- **🚀 Multi-Source Ingestion**:
+  - **Live Chrome Tab / Window**: Capture coding streams or webinars at 60 FPS with adaptive change detection.
+  - **YouTube Tutorials**: Paste any tutorial URL to stream video with synchronized code extraction.
+  - **Video Files**: Drag-and-drop `.mp4` or `.webm` recordings for rapid offline scanning.
+  - **Mac CLI (`capture-mac`)**: Native ScreenCaptureKit streaming with Apple Vision OCR and zero-knowledge encryption.
+- **🔒 100% Private & Client-Side**: OCR runs entirely inside your browser via Tesseract.js (WebAssembly). No screen recordings or OCR text ever leave your machine.
 
 | 📺 Side-by-Side YouTube Reader | 📝 Clean Code View (1-Click Copy) |
 | :---: | :---: |
 | ![YouTube Video & Code Reader](docs/screenshots/youtube-reader.png) | ![Clean Code Text View](docs/screenshots/code-view.png) |
 
-> 🚧 **Work in Progress:** We are currently working on a dedicated **YouTube Playlist** button and batch extraction engine to automatically scan, organize, and export code chapters across full multi-video tutorial series.
+---
+
+## 🚧 Feature Roadmap
+
+| Feature | Status | Description |
+| :--- | :---: | :--- |
+| **YouTube Playlist Batch Extractor** | 🟡 *In Progress* | Automatically queue, scan, and export code chapters across complete multi-video tutorial series. |
+| **One-Click Full Tutorial Export** | 🟢 *Planned* | Download all detected unique snippets from a full video session into a clean `.md` or `.py` / `.ts` archive. |
+| **Multi-Language Syntax Highlighting** | 🟢 *Live* | Automatic token detection for Python, TypeScript, JavaScript, Rust, Go, HTML, and Shell scripts. |
+| **Encrypted Presenter Relay** | 🟢 *Live* | Zero-knowledge `AES-256-GCM` live screen sharing via WebSocket relay. |
 
 ---
 
