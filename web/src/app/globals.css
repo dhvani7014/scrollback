@@ -55,6 +55,10 @@ pre.cmd { margin: 0; background: var(--screen); color: #E6EAF2; border-radius: 1
 
 /* reader */
 .reader { display: flex; flex-direction: column; gap: 12px; padding-bottom: 28px; }
+.reader.with-yt .yt-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.yt-pane { display: flex; flex-direction: column; gap: 10px; }
+.wrap:has(.with-yt) { max-width: 1440px; }
+@media (max-width: 960px) { .reader.with-yt .yt-layout { grid-template-columns: 1fr; } }
 .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .bar .title { font-weight: 600; flex: 1 1 200px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pill { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: #fff; border: 1px solid var(--line); color: var(--steel); }

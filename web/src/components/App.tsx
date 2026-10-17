@@ -36,8 +36,16 @@ export default function App() {
   sessionRef.current = session;
   useEffect(() => () => { void end(sessionRef.current); }, [end]);
 
-  const begin = useCallback((s: Session) => { setSession((old) => { void end(old); return s; }); }, [end]);
-  const leave = useCallback(() => { setSession((old) => { void end(old); return null; }); }, [end]);
+  const begin = useCallback((s: Session) => {
+    const old = sessionRef.current;
+    if (old) void end(old);
+    setSession(s);
+  }, [end]);
+  const leave = useCallback(() => {
+    const old = sessionRef.current;
+    if (old) void end(old);
+    setSession(null);
+  }, [end]);
 
   return (
     <>
@@ -197,10 +205,17 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
       const stop = await shareTab(reader, {
         preferCurrentTab: true,
         crop: (vw, vh) => {
-          const r = iframe.current?.getBoundingClientRect(); if (!r || !r.width) return null;
-          const k = vw / window.innerWidth;
-          const x = Math.max(0, r.left * k), y = Math.max(0, r.top * k);
-          const w = Math.min(vw - x, r.width * k), h = Math.min(vh - y, r.height * k);
+          const el = iframe.current;
+          if (!el) return null;
+          const r = el.getBoundingClientRect();
+          if (!r || r.width <= 40 || r.height <= 40) return null;
+          if (r.bottom <= 20 || r.top >= window.innerHeight - 20) return null;
+          const kx = vw / window.innerWidth;
+          const ky = vh / window.innerHeight;
+          const x = Math.max(0, r.left * kx);
+          const y = Math.max(0, r.top * ky);
+          const w = Math.min(vw - x, r.width * kx);
+          const h = Math.min(vh - y, r.height * ky);
           return w > 40 && h > 40 ? { x, y, w, h } : null;
         },
         onEnded: () => { setSharing(false); reader.stop(); },
@@ -223,7 +238,7 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
   };
 
   return (
-    <div className="reader">
+    <div className={`reader ${yt ? "with-yt" : ""}`}>
       <div className="bar">
         <span className="title">{session.label}</span>
         <span className={"pill" + (sharing && session.kind !== "recording" ? " live" : "")} aria-live="polite">{status}</span>
@@ -231,35 +246,37 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
         <button className="btn ghost" onClick={onLeave} id="leave">{sharing || session.kind === "recording" ? "Stop and close" : "Close"}</button>
       </div>
 
-      {yt && (
-        <>
-          <div className="yt">
-            <iframe
-              ref={iframe} title="YouTube player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
-              src={`https://www.youtube-nocookie.com/embed/${yt.id}?enablejsapi=1&rel=0&playsinline=1&start=${yt.start}`} />
+      <div className={yt ? "yt-layout" : "single-layout"}>
+        {yt && (
+          <div className="yt-pane">
+            <div className="yt">
+              <iframe
+                ref={iframe} title="YouTube player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
+                src={`https://www.youtube-nocookie.com/embed/${yt.id}?enablejsapi=1&rel=0&playsinline=1&start=${yt.start}`} />
+            </div>
+            <div className="row yt-controls">
+              {!sharing
+                ? <button className="btn hi" onClick={readEmbed}>Start reading this video</button>
+                : <span className="fine">Reading video above. Pause on code for cleanest copy.</span>}
+              {[1, 1.5, 2].map((r) => <button key={r} className="btn ghost" onClick={() => ytCmd("setPlaybackRate", [r])}>{r}×</button>)}
+              <a className="fine" href={`https://www.youtube.com/watch?v=${yt.id}`} target="_blank" rel="noopener noreferrer">Embedding blocked? Open on YouTube & Share a tab.</a>
+            </div>
+            {ytErr && <p className="err">{ytErr}</p>}
           </div>
-          <div className="row">
-            {!sharing
-              ? <button className="btn hi" onClick={readEmbed}>Start reading this video</button>
-              : <span className="fine">Reading the player above. Pause the video on a screen of code for the cleanest copy.</span>}
-            {[1, 1.5, 2].map((r) => <button key={r} className="btn ghost" onClick={() => ytCmd("setPlaybackRate", [r])}>{r}×</button>)}
-            <a className="fine" href={`https://www.youtube.com/watch?v=${yt.id}`} target="_blank" rel="noopener noreferrer">Embedding blocked? Open it on YouTube and use Share a tab instead.</a>
-          </div>
-          {ytErr && <p className="err">{ytErr}</p>}
-        </>
-      )}
+        )}
 
-      <div className="stage">
-        {frame
-          ? <FrameView frame={frame} onToast={toast} />
-          : <div className="screen empty"><div><div className="spinner" />{sharing || session.kind === "recording" ? "Reading the first screen… the OCR model loads once, then it's quick." : "Nothing read yet."}</div></div>}
-        <div className="timeline">
-          <button className="btn ghost" onClick={() => go(idx - 1)} disabled={idx <= 0} aria-label="Previous screen">Back</button>
-          <input type="range" min={0} max={Math.max(0, frames.length - 1)} value={Math.max(0, idx)} disabled={frames.length < 2}
-            onChange={(e) => go(Number(e.target.value))} aria-label="Timeline" />
-          <button className="btn ghost" onClick={() => go(idx + 1)} disabled={idx >= frames.length - 1} aria-label="Next screen">Next</button>
-          <span className="t">{frame ? clock(frame.ts) : "0:00"} · {frames.length} screen{frames.length === 1 ? "" : "s"}</span>
-          {!following && <button className="btn hi" onClick={() => setViewId(null)}>Jump to latest</button>}
+        <div className="stage">
+          {frame
+            ? <FrameView frame={frame} onToast={toast} />
+            : <div className="screen empty"><div><div className="spinner" />{sharing || session.kind === "recording" ? "Reading the first screen… the OCR model loads once, then it's quick." : "Nothing read yet."}</div></div>}
+          <div className="timeline">
+            <button className="btn ghost" onClick={() => go(idx - 1)} disabled={idx <= 0} aria-label="Previous screen">Back</button>
+            <input type="range" min={0} max={Math.max(0, frames.length - 1)} value={Math.max(0, idx)} disabled={frames.length < 2}
+              onChange={(e) => go(Number(e.target.value))} aria-label="Timeline" />
+            <button className="btn ghost" onClick={() => go(idx + 1)} disabled={idx >= frames.length - 1} aria-label="Next screen">Next</button>
+            <span className="t">{frame ? clock(frame.ts) : "0:00"} · {frames.length} screen{frames.length === 1 ? "" : "s"}</span>
+            {!following && <button className="btn hi" onClick={() => setViewId(null)}>Jump to latest</button>}
+          </div>
         </div>
       </div>
     </div>
