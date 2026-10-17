@@ -149,26 +149,24 @@ function Home({
 
   const makeReader = (latestOnly: boolean) => new Reader(new TesseractEngine(), { latestOnly, concurrency: latestOnly ? 1 : 2 });
 
-  const startWithUrl = async (url: string) => {
+  const startWithUrl = (url: string) => {
     const yt = parseYouTube(url);
     if (!yt) return fail("yt", "Please enter a valid YouTube link.");
     setErr({});
-    // Open the video cleanly in its own browser tab
-    window.open(`https://www.youtube.com/watch?v=${yt.id}&t=${yt.start || 0}s`, "_blank");
-    // Immediately prompt to capture that tab
     const reader = makeReader(true);
-    try {
-      const stop = await shareTab(reader, { onEnded: () => reader.stop() });
-      begin({ id: nextSession++, kind: "tab", label: `YouTube · ${yt.id}`, reader, stop });
-    } catch (e) {
-      void reader.dispose();
-      fail("yt", e instanceof DOMException && e.name === "NotAllowedError" ? "Sharing was cancelled — select the opened YouTube tab to start reading." : (e as Error).message);
-    }
+    begin({
+      id: nextSession++,
+      kind: "youtube",
+      label: `YouTube · ${yt.id}`,
+      reader,
+      stop: () => {},
+      yt,
+    });
   };
 
   const startYouTube = (e: React.FormEvent) => {
     e.preventDefault();
-    void startWithUrl(link);
+    startWithUrl(link);
   };
 
   const startTab = async () => {
@@ -179,7 +177,8 @@ function Home({
       begin({ id: nextSession++, kind: "tab", label: "Shared tab", reader, stop });
     } catch (e) {
       void reader.dispose();
-      fail("tab", e instanceof DOMException && e.name === "NotAllowedError" ? "Sharing was cancelled — choose a tab and press Share." : (e as Error).message);
+      const isCancelled = e instanceof DOMException && (e.name === "NotAllowedError" || e.name === "InvalidStateError" || e.message.toLowerCase().includes("invalid state"));
+      fail("tab", isCancelled ? "Sharing was cancelled — choose a tab and press Share." : (e as Error).message);
     }
   };
 
@@ -678,7 +677,8 @@ function ReaderView({ session, onLeave, toast }: { session: Session; onLeave: ()
       stopShare.current = stop; session.stop = stop; setSharing(true);
       ytCmd("playVideo");
     } catch (e) {
-      setYtErr(e instanceof DOMException && e.name === "NotAllowedError" ? "Sharing was cancelled — choose “This tab” and press Share." : (e as Error).message);
+      const isCancelled = e instanceof DOMException && (e.name === "NotAllowedError" || e.name === "InvalidStateError" || e.message.toLowerCase().includes("invalid state"));
+      setYtErr(isCancelled ? "Sharing was cancelled — choose “This tab” and press Share." : (e as Error).message);
     }
   };
 
