@@ -1,4 +1,4 @@
-# Scrollback ⚡
+# Scrollback
 
 > **Turn any screen video, live stream, or presentation into clean, selectable, searchable code.**
 
@@ -8,44 +8,44 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
-🌐 **Live Demo:** [https://scrollback1.vercel.app/](https://scrollback1.vercel.app/)
+**Live Demo:** [https://scrollback1.vercel.app/](https://scrollback1.vercel.app/)
 
-![Scrollback Developer Workbench](docs/screenshots/workbench-preview.png)
+![Scrollback Developer Workbench](docs/screenshots/workbench.png)
 
-Viewers open a link in their browser and can highlight, copy code blocks with preserved indentation, click links, and scrub backwards through video history while the presentation continues — then jump back to live.
+Viewers open a link in their browser and can highlight, copy code blocks with preserved indentation, click links, and scrub backwards through video history while the presentation continues, then jump back to live.
 
 ---
 
-## ⚡ Key Highlights
+## Key Highlights
 
-- **📝 Clean Code View**: Toggle between the visual video canvas and a distraction-free dark code editor view with standard text selection and unified **1-Click `Copy code`**.
-- **▥ Dual Viewport Layouts**: Switch instantly between **Side-by-Side View** (50/50 parallel video & code) and **Stacked View** (full-width stacked reader) depending on your screen size.
-- **🔍 Timeline Scrubbing & ⌘F Search**: Scrub backward through past video history without interrupting playback, or press `⌘F` to search keywords, function names, and syntax across all frames.
-- **🚀 Multi-Source Ingestion**:
+- **Clean Code View**: Toggle between the visual video canvas and a distraction-free dark code editor view with standard text selection and unified **1-Click `Copy code`**.
+- **Dual Viewport Layouts**: Switch instantly between **Side-by-Side View** (50/50 parallel video & code) and **Stacked View** (full-width stacked reader) depending on your screen size.
+- **Timeline Scrubbing & Search**: Scrub backward through past video history without interrupting playback, or press `Cmd+F` to search keywords, function names, and syntax across all frames.
+- **Multi-Source Ingestion**:
   - **Live Chrome Tab / Window**: Capture coding streams or webinars at 60 FPS with adaptive change detection.
   - **YouTube Tutorials**: Paste any tutorial URL to stream video with synchronized code extraction.
   - **Video Files**: Drag-and-drop `.mp4` or `.webm` recordings for rapid offline scanning.
   - **Mac CLI (`capture-mac`)**: Native ScreenCaptureKit streaming with Apple Vision OCR and zero-knowledge encryption.
-- **🔒 100% Private & Client-Side**: OCR runs entirely inside your browser via Tesseract.js (WebAssembly). No screen recordings or OCR text ever leave your machine.
+- **100% Private & Client-Side**: OCR runs entirely inside your browser via Tesseract.js (WebAssembly). No screen recordings or OCR text ever leave your machine.
 
-| 📺 Side-by-Side YouTube Reader | 📝 Clean Code View (1-Click Copy) |
+| Side-by-Side YouTube Reader | Clean Code View (1-Click Copy) |
 | :---: | :---: |
 | ![YouTube Video & Code Reader](docs/screenshots/youtube-reader.png) | ![Clean Code Text View](docs/screenshots/code-view.png) |
 
 ---
 
-## 🚧 Feature Roadmap
+## Feature Roadmap
 
 | Feature | Status | Description |
 | :--- | :---: | :--- |
-| **YouTube Playlist Batch Extractor** | 🟡 *In Progress* | Automatically queue, scan, and export code chapters across complete multi-video tutorial series. |
-| **One-Click Full Tutorial Export** | 🟢 *Planned* | Download all detected unique snippets from a full video session into a clean `.md` or `.py` / `.ts` archive. |
-| **Multi-Language Syntax Highlighting** | 🟢 *Live* | Automatic token detection for Python, TypeScript, JavaScript, Rust, Go, HTML, and Shell scripts. |
-| **Encrypted Presenter Relay** | 🟢 *Live* | Zero-knowledge `AES-256-GCM` live screen sharing via WebSocket relay. |
+| **YouTube Playlist Batch Extractor** | In Progress | Automatically queue, scan, and export code chapters across complete multi-video tutorial series. |
+| **One-Click Full Tutorial Export** | Planned | Download all detected unique snippets from a full video session into a clean `.md` or `.py` / `.ts` archive. |
+| **Multi-Language Syntax Highlighting** | Live | Automatic token detection for Python, TypeScript, JavaScript, Rust, Go, HTML, and Shell scripts. |
+| **Encrypted Presenter Relay** | Live | Zero-knowledge `AES-256-GCM` live screen sharing via WebSocket relay. |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
                       ┌────────────────────────────────────────┐
@@ -77,7 +77,7 @@ Viewers open a link in their browser and can highlight, copy code blocks with pr
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
 ### Prerequisites
 - Node.js 18+
@@ -117,7 +117,7 @@ Viewer link: http://localhost:8787/s/<session-id>#k=<encryption-key>
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Scrollback includes comprehensive automated test suites covering unit logic, WebSocket relay protocols, session lifecycle, and browser OCR pipelines:
 
@@ -137,7 +137,7 @@ node tools/session_lifecycle_test.mjs
 
 ---
 
-## 🔒 Security & Privacy Model
+## Security & Privacy Model
 
 - **Zero-Knowledge Architecture**: The Mac capture tool encrypts all screen frames using `AES-256-GCM` before sending them to the relay. The encryption key is appended only in the URL `#fragment`, ensuring neither the relay nor intermediate proxies can read the screen content.
 - **Client-Side WASM OCR**: Browser tab sharing and video file processing execute completely inside client memory via WebAssembly. No video data or OCR text is sent to third-party APIs.
@@ -146,15 +146,15 @@ node tools/session_lifecycle_test.mjs
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 For in-depth guides, visit the documentation sections built into the web app:
 - **Getting Started**: Quick tour of tab sharing, YouTube extraction, and Mac CLI.
-- **Tools Reference**: Breakdown of OCR engines, change detection thresholds, and keyboard shortcuts (`⌘F`, `Arrow keys`).
+- **Tools Reference**: Breakdown of OCR engines, change detection thresholds, and keyboard shortcuts (`Cmd+F`, `Arrow keys`).
 - **Self-Hosting Guide**: Docker, Node.js systemd, and Cloudflare Workers deployment instructions.
 
 ---
 
-## 📄 License
+## License
 
 MIT License. See [LICENSE](LICENSE) for details.
